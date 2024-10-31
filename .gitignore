@@ -3,3 +3,4 @@
 !/data/.gitkeep
 jayvee.vsix
 /helper/*
+*.csv
