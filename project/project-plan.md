@@ -6,26 +6,18 @@ Awesome MADE project.
 
 ## Main Question
 
-<!-- Think about one main question you want to answer based on the data. -->
-1. How has life expectancy developed over the last 20 years in the various countries of North and South America?
+1. How has life expectancy developed over the last 50 years in the various countries of North and South America?
 2. are there clear differences to the growth of the economy?
 
 ## Description
 
-<!-- Describe your data science project in max. 200 words. Consider writing about why and how you attempt it. -->
 This project aims to answer two questions. 
-Firstly, it analyzes how life expectancy has developed in the countries of North and South America over the last 20 years. 
-Selected countries will be compared to identify differences and similarities in the development of life expectancy. 
-If complete data is not available for all countries, the analysis will focus on the countries with the most reliable data sets.
+Firstly, it analyses how life expectancy has developed in the countries of North and South America over the last 20 years. 
+All possible countries from North and South America will be analysed and their life expectancy over the last 50 years will be determined. The next step is to determine what influence economic growth has on this. In order to be able to answer this question better, the data from as many countries as possible must be collected and analysed. 
 
-Secondly, the project goes one step further and analyzes whether economic growth has an influence on the development of life expectancy. 
-By analyzing economic indicators (such as GDP growth) in conjunction with life expectancy data, the project will explore whether there is a discernible link between economic progress and improvements in life expectancy.
-
-The results of this project will provide a better understanding of how social and economic conditions affect life expectancy in the Americas and whether economic prosperity automatically leads to longer lives.
+The results of this project will provide a better understanding of how social and economic conditions affect life expectancy in North and South America and whether economic prosperity automatically leads to a longer life.
 
 ## Datasources
-
-<!-- Describe each datasources you plan to use in a section. Use the prefic "DatasourceX" where X is the id of the datasource. -->
 
 ### Datasource1: Life Expectancy Data
 * Data URL: https://data.un.org/Data.aspx?d=PopDiv&f=variableID%3a68
@@ -43,11 +35,11 @@ The Economic Statistics Branch of the United Nations Statistics Division (UNSD) 
 
 ## Work Packages
 
-<!-- List of work packages ordered sequentially, each pointing to an issue with more details. -->
-
 1. Analysis of the data [#1][i1]
 2. Creating data pipelines [#2][i2]
 3. Visualization of the data [#3][i3]
-4. ....
+4. Comming soon
 
-[i1]: https://github.com/jvalue/made-template/issues/1
+[i1]: https://github.com/fi51wate/made/issues/1
+[i2]: https://github.com/fi51wate/made/issues/2
+[i3]: https://github.com/fi51wate/made/issues/3
