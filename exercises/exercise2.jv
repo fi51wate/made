@@ -31,7 +31,7 @@ pipeline BaumPflanzungenPipeline {
             "stadtteil" oftype StadtteilCheck,
             "standort" oftype text,
             "baumart_botanisch" oftype text,
-            "id" oftype text,
+            "id" oftype IDchecker,
             "baumfamilie" oftype text,
         ];
     }
@@ -42,6 +42,7 @@ pipeline BaumPflanzungenPipeline {
         ];
     }
 
+    // ^ = Anfang Vogelsang .* beliebige Zeichen können folgen
     constraint ValidStadtteilRegex oftype RegexConstraint {
         regex: /^Vogelsang.*$/;
     }
@@ -52,6 +53,7 @@ pipeline BaumPflanzungenPipeline {
         ];
     }
 
+    // 1-3 Zahlen zwischen 0-9, dann . dann beliebig viele zahlen dann komma und das gleiche nochmal
     constraint ValidIDRegex oftype RegexConstraint {
         regex: /^[0-9]{1,3}\.[0-9]+, [0-9]{1,3}\.[0-9]+$/;
     }
