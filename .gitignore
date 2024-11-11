@@ -4,3 +4,4 @@
 jayvee.vsix
 /helper/*
 *.csv
+./.idea/*
