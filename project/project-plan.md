@@ -7,7 +7,7 @@ Awesome MADE project.
 ## Main Question
 
 1. How has life expectancy developed over the last 50 years in the various countries of North and South America?
-2. are there clear differences to the growth of the economy?
+2. are there clear differences to the growth of the economy (Gross Domestic Product (GDP) per capita)?
 
 ## Description
 
@@ -20,18 +20,17 @@ The results of this project will provide a better understanding of how social an
 ## Datasources
 
 ### Datasource1: Life Expectancy Data
-* Data URL: https://data.un.org/Data.aspx?d=PopDiv&f=variableID%3a68
+* Data URL: https://genderdata.worldbank.org/en/indicator/sp-dyn-le00-in?gender=total
 * Data Type: CSV
-
-The 2024 Revision of World Population Prospects represents the latest global set of demographic estimates and projections prepared by the Population Division of the Department of Economic and Social Affairs of the United Nations Secretariat. It displays key demographic indicators for selected periods or dates from 1950 to 2100, for the world, development groups, regions, subregions, and countries or areas with more than 1,000 inhabitants in 2023. For countries or areas with fewer than 1,000 inhabitants in 2023, only figures related to population size and growth are provided. The estimates and projections contained in this revision cover a 150-year time horizon, which can be subdivided into estimates (1950-2023) and projections (2024-2100).
-(Cite from the data source)
 
 ### Datasource2: GDP Data
-* Data URL: https://data.un.org/Data.aspx?d=SNAAMA&f=grID%3a101%3bcurrID%3aUSD%3bpcFlag%3a1
+* Data URL: https://data.worldbank.org/indicator/NY.GDP.PCAP.CD
 * Data Type: CSV
 
-The Economic Statistics Branch of the United Nations Statistics Division (UNSD) maintains and annually updates the National Accounts Main Aggregates database. It consists of a complete and consistent set of time series, from 1970 onwards, of the main National Accounts aggregates of all UN Members States and other territories in the world for which National Accounts information is available. Its contents are based on the official data reported to UNSD through the annual National Accounts Questionnaire, supplemented with data estimates for any years and countries with incomplete or inconsistent information.
-(Cite from the data source)
+### Datasource3: All Countrys in area
+* Data URL: https://github.com/lukes/ISO-3166-Countries-with-Regional-Codes/blob/master/all/all.csv
+* Data Type: CSV
+
 
 ## Work Packages
 
