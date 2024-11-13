@@ -63,6 +63,7 @@ def download_and_extract_life_expectancy():
     os.remove(zip_path)
 
 
+# Methode um die Länder und ihre Reginnamen herunterzuladen um nur die Länder zu erhalten, welche in Amerika liegen.
 def download_country_csv():
     url = 'https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.csv'
 
@@ -143,6 +144,7 @@ def prepare_data(store=False):
 
     # Jetzt haben wir "saubere" Daten. In beiden Datensätzen sind länder aus Amerika enthalten und auch in beiden die gleichen Länder.
     if store:
+        # Die Daten werden jetzt in data.sqlite gespeichert
         conn = sqlite3.connect('../data/data.sqlite')
         gdp_df_filtered.to_sql('gdp_data', conn, if_exists='replace', index=False)
         live_exp_df_filtered.to_sql('life_expectancy_data', conn, if_exists='replace', index=False)
@@ -151,25 +153,31 @@ def prepare_data(store=False):
 
 
 if __name__ == '__main__':
+    # Ich möchte das mind. ein argument übergeben wird
     if len(sys.argv) == 1:
         print('Please provide an argument. Use "download" to download the raw data or "prepare" to prepare the data.')
         sys.exit()
 
+    # Erstelle den data Ordner falls er nicht existiert
     if not os.path.exists('../data'):
         os.makedirs('../data')
 
+    # Daten aus dem Ordner löschen
     if 'clean' in sys.argv:
         clean_data()
         print('Data cleaned')
     
+    # Rohdaten herunterladen
     if 'download' in sys.argv:
         download_all_raw_data()
         print('Data downloaded')
 
+    # Daten vorverarbeiten und als sqlite abspeichern
     if 'prepare' in sys.argv:
         prepare_data(store=True)
         print('Data prepared')
 
+    # Argument zum ausgeben von testdaten aus der Sqlite
     if 'test' in sys.argv:
         conn = sqlite3.connect('../data/data.sqlite')
         df = pd.read_sql('SELECT * FROM gdp_data', conn)
