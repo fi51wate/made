@@ -1,0 +1,96 @@
+pipeline GDPPipeline {
+
+    // SRC: https://jvalue.github.io/jayvee/docs/user/examples/workbooks-xlsx
+    // Copy of cars.jv
+    GDPExtractor 
+        -> GDPCSVInterpreter
+        -> GDPSheetPicker
+        -> GDPColumnDeleter
+        -> GDPHeaderRename
+        -> BondIssuanceInterpreter
+        -> BondIssuanceLoader;
+
+    // Für die zweite Tabelle
+    GDPHeaderRename
+        -> GDPPerCapitaInterpreter
+        -> GDPPerCapitaLoader;
+
+    block GDPExtractor oftype HttpExtractor {
+        url: "https://thedocs.worldbank.org/en/doc/7d852628d96b9411d43e5d36d5dff941-0050062022/original/Graphs-Chapter-5-02082022.xlsx";
+        retries: 3;
+    }
+
+    // XLXS statt csv
+    block GDPCSVInterpreter oftype XLSXInterpreter {}
+
+    // Die richtige Mappe nehmen
+    block GDPSheetPicker oftype SheetPicker {
+        sheetName: "Figure S5.1.2";
+    }
+
+    // Zellen auswählen
+    // https://jvalue.github.io/jayvee/docs/user/block-types/CellRangeSelector
+    block GDPColumnDeleter oftype CellRangeSelector  {
+        select: range P2:S45;
+    }
+
+    // wie hier: https://jvalue.github.io/jayvee/docs/user/block-types/CellWriter
+    block GDPHeaderRename oftype CellWriter {
+        at: range A1:D1; // weil wurde schon oben gelöscht...
+        write: ["Country Code", "Economy", "GDP per Capita", "Bond Issuance Share"];
+    }
+
+    // Anforderungen für Tablle 1
+    block BondIssuanceInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "Country Code" oftype CountryCodeAlpha3,
+            "Bond Issuance Share" oftype ZeroOne,
+        ];
+    }
+
+    // Anforderungen für Tabelle 2
+    block GDPPerCapitaInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "Country Code" oftype CountryCodeAlpha3,
+            "GDP per Capita" oftype PositivDez,
+        ];
+    }
+
+    valuetype PositivDez oftype decimal {
+        constraints: [
+            ValidGDP
+        ];
+    }
+
+    // ^ = Anfang Vogelsang .* beliebige Zeichen können folgen
+    constraint ValidGDP oftype RangeConstraint {
+        lowerBound: 0;
+        lowerBoundInclusive: false; // https://de.wikipedia.org/wiki/Positive_und_negative_Zahlen Null mathematisch gesehen ausgeschlossen
+    }
+
+    valuetype ZeroOne oftype decimal {
+        constraints: [
+            ValidIssuance
+        ];
+    }
+
+    // 1-3 Zahlen zwischen 0-9, dann . dann beliebig viele zahlen dann komma und das gleiche nochmal
+    constraint ValidIssuance oftype RangeConstraint {
+        lowerBound: 0;
+        upperBound: 1;
+        // die bounds sind std. true
+    }
+
+    // Beide Tabellen erstellen und speichern
+    block BondIssuanceLoader oftype SQLiteLoader {
+        table: "bondIssuance";
+        file: "./country-stats.sqlite";
+    }
+
+    block GDPPerCapitaLoader oftype SQLiteLoader {
+        table: "gdpPerCapita";
+        file: "./country-stats.sqlite";
+    }
+}
