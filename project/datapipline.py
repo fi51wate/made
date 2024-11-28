@@ -4,6 +4,7 @@ import zipfile
 import pandas as pd
 import sys
 import sqlite3
+import time
 
 # Festgelegte Namen für die Datein
 raw_gdp_name = 'raw_API_NY.GDP.PCAP.CD_DS2_en_csv_v2_9803.csv'
@@ -15,12 +16,26 @@ def download_gross_domestic_product_capita():
     # URL der Daten wo ich das zip herunterladen kann
     url = 'https://api.worldbank.org/v2/en/indicator/NY.GDP.PCAP.CD?downloadformat=csv'
     zip_path = '../data/gross_domestic_product_capita.zip'
+    max_retries = 3
+    attempt = 0
 
-    # Zip datei herunterladen
-    r = requests.get(url)
-    with open(zip_path, 'wb') as f:
-        # Daten in das zip schreiben
-        f.write(r.content)
+    # Daten herunterladen (3 mal versuchen)
+    while attempt <= max_retries:
+        try:
+            # Zip datei herunterladen
+            r = requests.get(url)
+            r.raise_for_status() 
+            with open(zip_path, 'wb') as f:
+                # Daten in das zip schreiben
+                f.write(r.content)
+            break
+        except requests.exceptions.RequestException as e:
+            attempt += 1
+            print(f'Attempt {attempt} failed: {e}')
+            if attempt > max_retries:
+                raise ValueError('Failed to download the file after multiple attempts.')
+            # Kurze Pause bevor man es nochmal versucht.
+            time.sleep(2)
 
     # Zip entpacken und nach den passenden Dateinamen suchen
     secure_counter = 0
@@ -44,10 +59,24 @@ def download_and_extract_life_expectancy():
     # Die Methode ist sehr ähnlich zu download_gross_domestic_product_capita
     url = 'https://extdataportal.worldbank.org/content/dam/sites/data/gender-data/data/data-gen/zip/indicator/life-expectancy-at-birth-years.zip'
     zip_path = '../data/life-expectancy-at-birth-years.zip'
+    max_retries = 3
+    attempt = 0
 
-    r = requests.get(url)
-    with open(zip_path, 'wb') as f:
-        f.write(r.content)
+    # Daten herunterladen (3 mal versuchen)
+    while attempt <= max_retries:
+        try:
+            r = requests.get(url)
+            r.raise_for_status() 
+            with open(zip_path, 'wb') as f:
+                f.write(r.content)
+            break
+        except requests.exceptions.RequestException as e:
+            attempt += 1
+            print(f'Attempt {attempt} failed: {e}')
+            if attempt > max_retries:
+                raise ValueError('Failed to download the file after multiple attempts.')
+            # Kurze Pause bevor man es nochmal versucht.
+            time.sleep(2)
 
     secure_counter = 0
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
@@ -66,11 +95,23 @@ def download_and_extract_life_expectancy():
 # Methode um die Länder und ihre Reginnamen herunterzuladen um nur die Länder zu erhalten, welche in Amerika liegen.
 def download_country_csv():
     url = 'https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.csv'
+    max_retries = 3
+    attempt = 0
 
-    # Lade die CSV-Datei herunter
-    r = requests.get(url)
-    with open(f'../data/{country_csv_name}', 'wb') as f:
-        f.write(r.content)
+    while attempt <= max_retries:
+        try:
+            # Lade die CSV-Datei herunter
+            r = requests.get(url)
+            r.raise_for_status()
+            with open(f'../data/{country_csv_name}', 'wb') as f:
+                f.write(r.content)
+            break
+        except requests.exceptions.RequestException as e:
+            attempt += 1
+            print(f'Attempt {attempt} failed: {e}')
+            if attempt > max_retries:
+                raise ValueError('Failed to download the file after multiple attempts.')
+            time.sleep(2)
 
 
 # Methode um alle Rohdaten herunterzuladen
