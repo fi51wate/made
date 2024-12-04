@@ -58,8 +58,8 @@ pipeline Mobile {
             "producer" oftype NotEmpty,
             "model" oftype NotEmpty,
             "month" oftype month,
-            "temperature" oftype FahrendeEinheiten,
-            "battery_temperature" oftype FahrendeEinheiten,
+            "temperature" oftype Celsius,
+            "battery_temperature" oftype Celsius,
         ];
     }
 
@@ -95,15 +95,15 @@ pipeline Mobile {
         upperBound: 12;
     }
 
-    valuetype FahrendeEinheiten oftype decimal {
+    valuetype Celsius oftype decimal {
         constraints: [
-            FahrendEinheitRange
+            CelsiusRange
         ];
     }
 
     // https://de.wikipedia.org/wiki/Grad_Fahrenheit
-    constraint FahrendEinheitRange oftype RangeConstraint {
-        lowerBound: -459.670;
+    constraint CelsiusRange oftype RangeConstraint {
+        lowerBound: -273.15;
     }
 
     block TransformCelToFarTemp oftype TableTransformer {
