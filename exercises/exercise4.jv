@@ -39,7 +39,7 @@ pipeline Mobile {
     }
 
     block MobileColumnDeleter oftype ColumnDeleter {
-        delete: [column G, column H, column I, column J, column K, column L];
+        delete: [column F, column G, column H, column I, column J, column K, column L];
     }
 
     block MobileHeaderWriter oftype CellWriter {
