@@ -11,6 +11,8 @@ raw_gdp_name = 'raw_API_NY.GDP.PCAP.CD_DS2_en_csv_v2_9803.csv'
 raw_life_expectancy_name = 'raw_Life expectancy at birth (years).csv'
 country_csv_name = 'all_countries.csv'
 
+STORE_PATH = '../data/data.sqlite'
+
 # Methode die mir die Daten für das GDP pro Kopf herunterlädt
 def download_gross_domestic_product_capita():
     # URL der Daten wo ich das zip herunterladen kann
@@ -186,7 +188,7 @@ def prepare_data(store=False):
     # Jetzt haben wir "saubere" Daten. In beiden Datensätzen sind länder aus Amerika enthalten und auch in beiden die gleichen Länder.
     if store:
         # Die Daten werden jetzt in data.sqlite gespeichert
-        conn = sqlite3.connect('../data/data.sqlite')
+        conn = sqlite3.connect(STORE_PATH)
         gdp_df_filtered.to_sql('gdp_data', conn, if_exists='replace', index=False)
         live_exp_df_filtered.to_sql('life_expectancy_data', conn, if_exists='replace', index=False)
         conn.close()
@@ -220,7 +222,7 @@ if __name__ == '__main__':
 
     # Argument zum ausgeben von testdaten aus der Sqlite
     if 'test' in sys.argv:
-        conn = sqlite3.connect('../data/data.sqlite')
+        conn = sqlite3.connect(STORE_PATH)
         df = pd.read_sql('SELECT * FROM gdp_data', conn)
         print(df.head())
         df = pd.read_sql('SELECT * FROM life_expectancy_data', conn)

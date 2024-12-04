@@ -1,0 +1,131 @@
+pipeline Mobile {
+
+    MobileExtractor
+    -> MobileArchiveInteprter
+    -> MobileFilePicker
+    -> MobileTextFileInterpreter
+    -> MobileCSVInterpreter
+    -> MobileCellRangeSelector
+    -> MobileColumnDeleter
+    -> MobileHeaderWriter
+    -> MobileTableInterpreter
+    -> TransformCelToFarTemp
+    -> TransformCelToFarBatt
+    -> TemperaturesSQLiteLoader;
+
+
+    block MobileExtractor oftype HttpExtractor {
+        url: "https://www.mowesta.com/data/measure/mowesta-dataset-20221107.zip";
+        retries: 3;
+    }
+
+    block MobileArchiveInteprter oftype ArchiveInterpreter {
+        archiveType: "zip";
+    }
+
+    block MobileFilePicker oftype FilePicker {
+        path: "/data.csv";
+    }
+
+    block MobileTextFileInterpreter oftype TextFileInterpreter {
+    }
+
+    block MobileCSVInterpreter oftype CSVInterpreter {
+        delimiter: ";";
+    }
+
+    block MobileCellRangeSelector oftype CellRangeSelector {
+        select: range A1:M*;
+    }
+
+    block MobileColumnDeleter oftype ColumnDeleter {
+        delete: [column G, column H, column I, column J, column K, column L];
+    }
+
+    block MobileHeaderWriter oftype CellWriter {
+        at: range A1:F1;
+        write: ["id", "producer", "model", "month", "temperature", "battery_temperature"];
+    }
+
+    // id soll > 0 sein
+    // producer und model dürfen nicht leer sein
+    // month soll zwischen 1 und 12 sein
+    // temperature und battery_temperature sollen größer als -459.67 sein (Nullpunkt der Fahrenheit-Skala)
+    block MobileTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "id" oftype PosInt,
+            "producer" oftype NotEmpty,
+            "model" oftype NotEmpty,
+            "month" oftype month,
+            "temperature" oftype FahrendeEinheiten,
+            "battery_temperature" oftype FahrendeEinheiten,
+        ];
+    }
+
+    valuetype PosInt oftype integer {
+        constraints: [
+            PositiveRange
+        ];
+    }
+
+    constraint PositiveRange oftype RangeConstraint {
+        lowerBound: 0;
+    }
+
+    valuetype NotEmpty oftype text {
+        constraints: [
+            NotEmptyConstraint
+        ];
+    }
+
+    constraint NotEmptyConstraint oftype LengthConstraint {
+        minLength: 1;
+    }
+
+    valuetype month oftype integer {
+        constraints: [
+            MonthConstraint
+        ];
+    }
+
+    // lower und upper sind standardmäßig  auf true
+    constraint MonthConstraint oftype RangeConstraint {
+        lowerBound: 1;
+        upperBound: 12;
+    }
+
+    valuetype FahrendeEinheiten oftype decimal {
+        constraints: [
+            FahrendEinheitRange
+        ];
+    }
+
+    // https://de.wikipedia.org/wiki/Grad_Fahrenheit
+    constraint FahrendEinheitRange oftype RangeConstraint {
+        lowerBound: -459.670;
+    }
+
+    block TransformCelToFarTemp oftype TableTransformer {
+        inputColumns: ['temperature'];
+        outputColumn: 'temperature';
+        uses: CelsiusToFahrenheitTransform;
+    }
+
+    block TransformCelToFarBatt oftype TableTransformer {
+        inputColumns: ['battery_temperature'];
+        outputColumn: 'battery_temperature';
+        uses: CelsiusToFahrenheitTransform;
+    }
+
+    transform CelsiusToFahrenheitTransform {
+        from Celsius oftype decimal;
+        to Fahrenheit oftype decimal;
+        Fahrenheit: (Celsius * 9/5) + 32;
+    }
+
+    block TemperaturesSQLiteLoader oftype SQLiteLoader {
+        table: "temperatures";
+        file: "./temperatures.sqlite";
+    }
+}
