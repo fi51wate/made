@@ -27,11 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r main/project/requirements.txt
 
-      - name: List files for debugging
-        run: |
-          ls -R
-
       - name: Run test
         run: |
-          chmod +x main/project/tests.sh
-          main/project/tests.sh
+          chmod +x main/project/test.sh
+          main/project/test.sh
