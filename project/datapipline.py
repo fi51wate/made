@@ -1,5 +1,5 @@
-import requests
 import os
+import requests
 import zipfile
 import pandas as pd
 import sys
@@ -11,7 +11,10 @@ raw_gdp_name = 'raw_API_NY.GDP.PCAP.CD_DS2_en_csv_v2_9803.csv'
 raw_life_expectancy_name = 'raw_Life expectancy at birth (years).csv'
 country_csv_name = 'all_countries.csv'
 
-STORE_PATH = '../data/data.sqlite'
+# Define the absolute path to the data directory
+DATA_DIR = os.path.join(os.path.dirname(__file__), '../data')
+
+STORE_PATH = os.path.join(DATA_DIR, 'data.sqlite')
 
 # Methode die mir die Daten für das GDP pro Kopf herunterlädt
 def download_gross_domestic_product_capita():
@@ -60,7 +63,7 @@ def download_gross_domestic_product_capita():
 def download_and_extract_life_expectancy():
     # Die Methode ist sehr ähnlich zu download_gross_domestic_product_capita
     url = 'https://extdataportal.worldbank.org/content/dam/sites/data/gender-data/data/data-gen/zip/indicator/life-expectancy-at-birth-years.zip'
-    zip_path = '../data/life-expectancy-at-birth-years.zip'
+    zip_path = os.path.join(DATA_DIR, 'life-expectancy-at-birth-years.zip')
     max_retries = 3
     attempt = 0
 
@@ -86,7 +89,7 @@ def download_and_extract_life_expectancy():
             # Ich interssiere mich nur für Life expectancy at birth (years)
             if file == 'Life expectancy at birth (years).csv':
                 zip_ref.extract(file, '../data')
-                os.rename(f'../data/{file}', f'../data/{raw_life_expectancy_name}')
+                os.rename(os.path.join(DATA_DIR, file), os.path.join(DATA_DIR, raw_life_expectancy_name))
                 secure_counter += 1
 
     if secure_counter != 1:
@@ -105,7 +108,7 @@ def download_country_csv():
             # Lade die CSV-Datei herunter
             r = requests.get(url)
             r.raise_for_status()
-            with open(f'../data/{country_csv_name}', 'wb') as f:
+            with open(os.path.join(DATA_DIR, country_csv_name), 'wb') as f:
                 f.write(r.content)
             break
         except requests.exceptions.RequestException as e:
@@ -124,12 +127,10 @@ def download_all_raw_data():
 
 # Methode um die Daten aus dem data Ordner zu löschen
 def clean_data():
-    data_dir = os.path.join(os.path.dirname(__file__), '../data')
-    print(f'Deleting all files in {data_dir}')
-    for file in os.listdir(data_dir):
+    for file in os.listdir(DATA_DIR):
         if file == '.gitkeep':
             continue
-        os.remove(f'../data/{file}')
+        os.remove(os.path.join(DATA_DIR, file))
 
 
 # Diese Methode dient dazu die Daten vorzuverarbeiten.
@@ -154,7 +155,7 @@ def prepare_data(store=False):
     print(f'Found {len(american_countries)} countries in America')
 
     # Die ersten 4 Zeilen bestehen aus Überschrift
-    gdp_df = pd.read_csv(f'../data/{raw_gdp_name}', skiprows=4)
+    gdp_df = pd.read_csv(os.path.join(DATA_DIR, raw_gdp_name), skiprows=4)
     # Entferne Spalten, die ich nicht mehr benötige
     gdp_df = gdp_df.drop(columns=['Indicator Name', 'Indicator Code', 'Unnamed: 68'])
     # Jetzt filtern wir die csv-Dateien, weil uns nur die Länder aus Amerika interessieren
@@ -165,7 +166,7 @@ def prepare_data(store=False):
         print(f'Country not found in GDP data: {county_df[county_df["alpha-3"] == country]["name"].values[0]}')
     
     # Das gleiche auch für die Lebenserwartung
-    live_exp_df = pd.read_csv(f'../data/{raw_life_expectancy_name}')
+    live_exp_df = pd.read_csv(os.path.join(DATA_DIR, raw_life_expectancy_name))
     live_exp_df = live_exp_df.drop(columns=['Indicator Name', 'Indicator Code'])
     # Hier gebe ich nur die Länder rein, welche ich auch bei GDP gefunden habe
     live_exp_df_filtered, not_found_countries_live = filter_countries(live_exp_df, gdp_df_filtered['Country Code'].tolist())
