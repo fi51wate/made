@@ -25,9 +25,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r project/requirements.txt
+          pip install -r main/project/requirements.txt
 
       - name: Run test
         run: |
-          chmod +x project/tests.sh
-          project/tests.sh
+          chmod +x main/project/tests.sh
+          main/project/tests.sh
