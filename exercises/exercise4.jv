@@ -35,11 +35,11 @@ pipeline Mobile {
     }
 
     block MobileCellRangeSelector oftype CellRangeSelector {
-        select: range A1:M*;
+        select: range A1:J*;
     }
 
     block MobileColumnDeleter oftype ColumnDeleter {
-        delete: [column F, column G, column H, column I, column J, column K, column L];
+        delete: [column F, column G, column H, column I];
     }
 
     block MobileHeaderWriter oftype CellWriter {
@@ -58,8 +58,8 @@ pipeline Mobile {
             "producer" oftype NotEmpty,
             "model" oftype NotEmpty,
             "month" oftype month,
-            "temperature" oftype Celsius,
-            "battery_temperature" oftype Celsius,
+            "temperature" oftype decimal,
+            "battery_temperature" oftype decimal,
         ];
     }
 
@@ -101,7 +101,7 @@ pipeline Mobile {
         ];
     }
 
-    // https://de.wikipedia.org/wiki/Grad_Fahrenheit
+    // https://de.wikipedia.org/wiki/Liste_von_Gr%C3%B6%C3%9Fenordnungen_der_Temperatur
     constraint CelsiusRange oftype RangeConstraint {
         lowerBound: -273.15;
     }
