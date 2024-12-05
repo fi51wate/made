@@ -17,6 +17,19 @@ def test_load_data():
     try:
         conn = sqlite3.connect(f'{dp.STORE_PATH}')
 
+        # Check if the required tables exist
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+
+        if 'gdp_data' not in [tableName[0] for tableName in tables]:
+            print("Missing table 'gdp_data' in sqlite")
+            return None, None
+
+        if 'life_expectancy_data' not in [tableName[0] for tableName in tables]:
+            print("Missing table 'life_expectancy_data' in sqlite")
+            return None, None
+
         # Load the data
         df_gdp = pd.read_sql_query('SELECT * FROM gdp_data', conn)
         df_live = pd.read_sql_query('SELECT * FROM life_expectancy_data', conn)
@@ -105,6 +118,12 @@ if __name__ == '__main__':
 
     # Load the data
     df_gdp, df_live = test_load_data()
+
+    if df_gdp is None or df_live is None:
+        print("Failed to load the data.")
+        sys.exit(1)
+    else:
+        print("Data loaded successfully.")
 
     # Test the structure of the tables
     result = test_structure(df_gdp, df_live)

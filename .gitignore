@@ -5,3 +5,4 @@ jayvee.vsix
 /helper/*
 *.csv
 ./.idea/*
+__pycache__
