@@ -89,7 +89,7 @@ def download_and_extract_life_expectancy():
             # Ich interssiere mich nur für Life expectancy at birth (years)
             if file == 'Life expectancy at birth (years).csv':
                 zip_ref.extract(file, '../data')
-                os.rename(os.path.join(DATA_DIR, file), os.path.join(DATA_DIR, raw_life_expectancy_name))
+                os.rename(f'../data/{file}', f'../data/{raw_life_expectancy_name}')
                 secure_counter += 1
 
     if secure_counter != 1:
