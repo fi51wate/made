@@ -49,8 +49,8 @@ def download_gross_domestic_product_capita():
             # Ich interssiere mich nur für Life expectancy at birth (years) (keine Metadaten)
             if 'Metadata' not in file:
                 # Daten aus dem zip extrahieren und umbenennen
-                zip_ref.extract(file, '../data')
-                os.rename(f'../data/{file}', f'../data/{raw_gdp_name}')
+                zip_ref.extract(file, DATA_DIR)
+                os.rename(f'{DATA_DIR}/{file}', f'{DATA_DIR}/{raw_gdp_name}')
                 secure_counter += 1
     # Wenn ich mehr als eins gefunden habe, ist was schief gelaufen. Hier müsste man eine neue if bedinfung schreiben, welche nur die relevante Datei extrahiert.
     if secure_counter != 1:
@@ -88,8 +88,8 @@ def download_and_extract_life_expectancy():
         for file in zip_ref.namelist():
             # Ich interssiere mich nur für Life expectancy at birth (years)
             if file == 'Life expectancy at birth (years).csv':
-                zip_ref.extract(file, '../data')
-                os.rename(f'../data/{file}', f'../data/{raw_life_expectancy_name}')
+                zip_ref.extract(file, DATA_DIR)
+                os.rename(f'{DATA_DIR}/{file}', f'{DATA_DIR}/{raw_life_expectancy_name}')
                 secure_counter += 1
 
     if secure_counter != 1:
