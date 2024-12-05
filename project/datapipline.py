@@ -124,7 +124,9 @@ def download_all_raw_data():
 
 # Methode um die Daten aus dem data Ordner zu löschen
 def clean_data():
-    for file in os.listdir('../data'):
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    print(f'Deleting all files in {data_dir}')
+    for file in os.listdir(data_dir):
         if file == '.gitkeep':
             continue
         os.remove(f'../data/{file}')
