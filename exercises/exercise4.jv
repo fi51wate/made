@@ -58,8 +58,8 @@ pipeline Mobile {
             "producer" oftype NotEmpty,
             "model" oftype NotEmpty,
             "month" oftype month,
-            "temperature" oftype decimal,
-            "battery_temperature" oftype decimal,
+            "temperature" oftype Celsius,
+            "battery_temperature" oftype Celsius,
         ];
     }
 
