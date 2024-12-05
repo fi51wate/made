@@ -148,7 +148,7 @@ def prepare_data(store=False):
         return filtered_df, not_found_countries
 
     # CSV Datei einlesen 
-    county_df = pd.read_csv(f'../data/{country_csv_name}')
+    county_df = pd.read_csv(os.path.join(DATA_DIR, country_csv_name))
     # Extrahiere nur die Ländernamen welche auf dem Kontinent Amerika liegen
     # Ich vergleiche küzel (alpha-3), weil die Namen sich unterscheiden und ich so mehr Treffer erhalte.
     american_countries = county_df[county_df['region'] == 'Americas']['alpha-3'].tolist()
