@@ -1,0 +1,78 @@
+pipeline Energy {
+
+    // Sehr ähnlich zur Aufgabe 4. Nur halt mit weniger Filterungen
+    EnergyExtractor
+    -> EnergyArchiveInteprter
+    -> EnergyFilePicker
+    -> EnergyTextFileInterpreter
+    -> EnergyCSVInterpreter
+    -> EnergyColumnDeleter
+    -> EnergyTableInterpreter
+    -> EnergySQLiteLoader;
+
+
+    block EnergyExtractor oftype HttpExtractor {
+        url: "https://gtfs.rhoenenergie-bus.de/GTFS.zip";
+        retries: 3;
+    }
+
+    block EnergyArchiveInteprter oftype ArchiveInterpreter {
+        archiveType: "zip";
+    }
+
+    block EnergyFilePicker oftype FilePicker {
+        path: "/stops.txt";
+    }
+
+    block EnergyTextFileInterpreter oftype TextFileInterpreter {
+    }
+
+    block EnergyCSVInterpreter oftype CSVInterpreter {
+        delimiter: ",";
+        enclosing: '"';
+    }
+
+    // Remove unnecessary columns
+    block EnergyColumnDeleter oftype ColumnDeleter {
+        delete: [column B, column D, column H, column I, column J, column K];
+    }
+
+    
+    block EnergyTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "stop_id" oftype integer,
+            "stop_name" oftype text,
+            "stop_lat" oftype Coord,
+            "stop_lon" oftype Coord,
+            "zone_id" oftype Zone,
+        ];
+    }
+
+    valuetype Coord oftype decimal {
+        constraints: [
+            PositiveRange
+        ];
+    }
+
+    constraint PositiveRange oftype RangeConstraint {
+        lowerBound: -90;
+        upperBound: 90;
+    }
+    
+    valuetype Zone oftype integer {
+        constraints: [
+            ZoneValue
+        ];
+    }
+
+    constraint ZoneValue oftype RangeConstraint {
+        lowerBound: 1925;
+        upperBound: 1925;
+    }
+
+    block EnergySQLiteLoader oftype SQLiteLoader {
+        table: "stops";
+        file: "./gtfs.sqlite";
+    }
+}
