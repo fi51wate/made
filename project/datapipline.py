@@ -20,7 +20,7 @@ STORE_PATH = os.path.join(DATA_DIR, 'data.sqlite')
 def download_gross_domestic_product_capita():
     # URL der Daten wo ich das zip herunterladen kann
     url = 'https://api.worldbank.org/v2/en/indicator/NY.GDP.PCAP.CD?downloadformat=csv'
-    zip_path = '../data/gross_domestic_product_capita.zip'
+    zip_path = os.path.join(DATA_DIR, 'gross_domestic_product_capita.zip')
     max_retries = 3
     attempt = 0
 
