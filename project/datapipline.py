@@ -155,10 +155,6 @@ def prepare_data(store=False):
     print(f'Found {len(american_countries)} countries in America')
 
     # Die ersten 4 Zeilen bestehen aus Überschrift
-    for file in os.listdir(DATA_DIR):
-        print(file)
-
-    print('Reading raw data: ' + raw_gdp_name)
     gdp_df = pd.read_csv(os.path.join(DATA_DIR, raw_gdp_name), skiprows=4)
     # Entferne Spalten, die ich nicht mehr benötige
     gdp_df = gdp_df.drop(columns=['Indicator Name', 'Indicator Code', 'Unnamed: 68'])
