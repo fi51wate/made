@@ -26,13 +26,13 @@ def test_load_data():
             print("Missing table 'gdp_data' in sqlite")
             return None, None
 
-        if 'life_expectancy_data' not in [tableName[0] for tableName in tables]:
+        if 'life_expectancy_data_total' not in [tableName[0] for tableName in tables]:
             print("Missing table 'life_expectancy_data' in sqlite")
             return None, None
 
         # Load the data
         df_gdp = pd.read_sql_query('SELECT * FROM gdp_data', conn)
-        df_live = pd.read_sql_query('SELECT * FROM life_expectancy_data', conn)
+        df_live = pd.read_sql_query('SELECT * FROM life_expectancy_data_total', conn)
         return df_gdp, df_live
     except sqlite3.Error as e:
         print(f"Failed to connect to SQLite: {e}")
@@ -61,7 +61,7 @@ def test_structure(df_gdp, df_live):
             print(f"Invalid year in gdp_data: {number}")
             return False
 
-    min_live_columns = ['Country Name', 'Country Code', 'Year', 'Value', 'Disaggregation']
+    min_live_columns = ['Country Name', 'Country Code']
     if not all(item in df_live.columns for item in min_live_columns):
         print(f"Missing columns in life_expectancy_data: {min_live_columns}")
         return False
@@ -89,25 +89,6 @@ def test_content(df_gdp, df_live):
         if len(code) != 3:
             print(f"Invalid country code: {code}")
             return False
-
-    # Check if the year and value are valid
-    for year in df_live['Year']:
-        if year < 1000:
-            print(f"Invalid year: {year}")
-            return False
-    
-    # Check if the value is valid
-    for value in df_live['Value']:
-        if value < 0:
-            print(f"Invalid life expectancy value: {number}")
-            return False
-
-    # Check if the disaggregation have at least the values which i need for my analysis
-    required_values = {'male', 'female', 'total'}
-    disaggregation_values = set(df_live['Disaggregation'].dropna().unique())
-    
-    if not required_values.intersection(disaggregation_values):
-        print("The 'Disaggregation' column does not contain 'male', 'female', or 'total'.")
 
     return True
 

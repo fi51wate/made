@@ -185,7 +185,36 @@ def prepare_data(store=False):
     print(f'Missing values in GDP data: {gdp_df_filtered.isnull().sum().sum()}')
     print(f'Missing values in Life expectancy data: {live_exp_df_filtered.isnull().sum().sum()}')
     gdp_df_filtered = gdp_df_filtered.fillna(0)
-    live_exp_df_filtered = live_exp_df_filtered.fillna(0)
+
+    # Lösche Daten, wenn die gesammte Zeile 0 ist
+    check_columns = gdp_df_filtered.select_dtypes(include='number').columns
+    rows_to_keep = (gdp_df_filtered[check_columns] != 0).any(axis=1)
+
+    deleted_country_names = gdp_df_filtered.loc[~rows_to_keep, 'Country Name']
+    print(f'Deleted Country names because they have no data: {deleted_country_names.tolist()}')
+
+
+    gdp_df_filtered = gdp_df_filtered[rows_to_keep]
+    live_exp_df_filtered = live_exp_df_filtered[live_exp_df_filtered['Country Code'].isin(gdp_df_filtered['Country Code'])]
+
+    # Daten nach Disaggregation gruppieren (männlich, weiblich, beides)
+    grouped = live_exp_df_filtered.groupby('Disaggregation')
+
+    dfs = []
+    for name, group in grouped:
+        group = group.drop(columns=['Disaggregation'])
+        
+        # DataFrame reshapen, damit es so ist wie GDP Data
+        df_pivoted = group.pivot(index=['Country Name', 'Country Code'], columns='Year', values='Value').reset_index()
+        # Auch hier NaN in 0 umwandeln
+        df_pivoted.fillna(0, inplace=True)
+        # Nur Jahre die in beiden drin sind sollen erhalten bleiben
+        df_pivoted.drop(columns=set(df_pivoted.columns.astype(str)) - set(gdp_df_filtered.columns), inplace=True)
+        
+        dfs.append((name, df_pivoted))
+
+    # Nur Jahre die in beiden drin sind sollen erhalten bleiben
+    gdp_df_filtered = gdp_df_filtered.drop(columns=set(gdp_df_filtered.columns) - set(dfs[0][1].columns.astype(str)))
 
 
     # Jetzt haben wir "saubere" Daten. In beiden Datensätzen sind länder aus Amerika enthalten und auch in beiden die gleichen Länder.
@@ -193,7 +222,8 @@ def prepare_data(store=False):
         # Die Daten werden jetzt in data.sqlite gespeichert
         conn = sqlite3.connect(STORE_PATH)
         gdp_df_filtered.to_sql('gdp_data', conn, if_exists='replace', index=False)
-        live_exp_df_filtered.to_sql('life_expectancy_data', conn, if_exists='replace', index=False)
+        for name, df in dfs:
+            df.to_sql(f'life_expectancy_data_{name}', conn, if_exists='replace', index=False)
         conn.close()
     return gdp_df_filtered, live_exp_df_filtered
 
@@ -222,13 +252,3 @@ if __name__ == '__main__':
     if 'prepare' in sys.argv:
         prepare_data(store=True)
         print('Data prepared')
-
-    # Argument zum ausgeben von testdaten aus der Sqlite
-    if 'test' in sys.argv:
-        conn = sqlite3.connect(STORE_PATH)
-        df = pd.read_sql('SELECT * FROM gdp_data', conn)
-        print(df.head())
-        df = pd.read_sql('SELECT * FROM life_expectancy_data', conn)
-        print(df.head())
-        conn.close()
-        print('Data read from sqlite')
