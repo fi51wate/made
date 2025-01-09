@@ -6,3 +6,4 @@ jayvee.vsix
 *.csv
 ./.idea/*
 __pycache__
+.ipynb_checkpoints
