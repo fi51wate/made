@@ -1,37 +1,48 @@
-# Methods of Advanced Data Engineering Template Project
+# Analysing the relationship between gross domestic product per capita (growth) and life expectancy (growth) in countries in the Americas
 
-This template project provides some structure for your open data project in the MADE module at FAU.
-This repository contains (a) a data science project that is developed by the student over the course of the semester, and (b) the exercises that are submitted over the course of the semester.
+## Overview
+Over the years, economic power has increased in all countries. Due to medical progress over the years, this also applies to life expectancy in most countries. The higher the economic power, the higher the life expectancy, presumably because there is enough money available for high-tech medical treatments, which can be used to treat diseases in old age in particular.
 
-To get started, please follow these steps:
-1. Create your own fork of this repository. Feel free to rename the repository right after creation, before you let the teaching instructors know your repository URL. **Do not rename the repository during the semester**.
+However, the exact nature of this correlation is unclear. More precisely, what influence the gross domestic product per capita has on life expectancy. It is clear that it cannot be linear, as exponential economic growth has already been observed in the past, but this does not have such a one-to-one effect on life expectancy. For this reason, the influence of growth in gross domestic product per capita on growth in life expectancy is analysed below by comparing it for wealthy, middle-income and poor countries.
 
-## Project Work
-Your data engineering project will run alongside lectures during the semester. We will ask you to regularly submit project work as milestones, so you can reasonably pace your work. All project work submissions **must** be placed in the `project` folder.
+## Data Sources
+|             | Data Source                                                                                                                               | Data Source                                                                                                                 | Data Source                                                                                                                                      |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| Title       | Life expectancy at birth (years)                                                                                                          | Gross domestic product per capita                                                                                           | Gross domestic product per capita                                                                                                                |
+| Data-URL    | [World Bank Life expectancy at birth (years)](https://genderdata.worldbank.org/en/indicator/sp-dyn-le00-in?gender=total)                  | [World Bank](https://data.worldbank.org/)                                                                                   | [World Bank GDP per capita](https://data.worldbank.org/indicator/NY.GDP.PCAP.CD)                                                                 |
+| License     | [CC-BY-4.0](https://datacatalog.worldbank.org/public-licenses#cc-by)                                                                      | [CC-BY-4.0](https://datacatalog.worldbank.org/public-licenses#cc-by)                                                        | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)                                                                                  |
+| Description | The CSV file contains information on life expectancy for all countries in the world from 1960 to 2022, divided into men, women and total. | The data set contains the gross domestic product per capita for all countries in the world in the period from 1960 to 2023. | This dataset contains information on the country names and country codes in connection with the continent on which these countries are located.  |
 
-### Exporting a Jupyter Notebook
-Jupyter Notebooks can be exported using `nbconvert` (`pip install nbconvert`). For example, to export the example notebook to HTML: `jupyter nbconvert --to html examples/final-report-example.ipynb --embed-images --output final-report.html`
+## Requirements
 
+- Python 3
+- Jupyter Notebook
+- Pandas
+- Matplotlib
+- Numpy
 
-## Exercises
-During the semester you will need to complete exercises using [Jayvee](https://github.com/jvalue/jayvee). You **must** place your submission in the `exercises` folder in your repository and name them according to their number from one to five: `exercise<number from 1-5>.jv`.
+## Installation
 
-In regular intervals, exercises will be given as homework to complete during the semester. Details and deadlines will be discussed in the lecture, also see the [course schedule](https://made.uni1.de/).
+1. Clone the repo
+   ```sh
+   git clone https://github.com/fi51wate/made.git
+   ```
+2. Go to directory
+   ```sh
+   cd made
+   ```
+3. Download the data
+   ```sh
+   ./pipeline.sh
+   ```
+4. Optionally validate the downloaded data:
+   ```sh
+   ./test.sh
+   ```
+5. Run the Jupyter Notebook `project/project.ipynb`
 
-### Exercise Feedback
-We provide automated exercise feedback using a GitHub action (that is defined in `.github/workflows/exercise-feedback.yml`). 
+## Further Links
 
-To view your exercise feedback, navigate to Actions → Exercise Feedback in your repository.
-
-The exercise feedback is executed whenever you make a change in files in the `exercise` folder and push your local changes to the repository on GitHub. To see the feedback, open the latest GitHub Action run, open the `exercise-feedback` job and `Exercise Feedback` step. You should see command line output that contains output like this:
-
-```sh
-Found exercises/exercise1.jv, executing model...
-Found output file airports.sqlite, grading...
-Grading Exercise 1
-	Overall points 17 of 17
-	---
-	By category:
-		Shape: 4 of 4
-		Types: 13 of 13
-```
+- Link to the Jupyter Notebook: [project.ipynb](https://github.com/fi51wate/made/blob/main/project/project.ipynb)
+- Link to the Final Report: [analysis-report.pdf](https://github.com/fi51wate/made/blob/main/project/analysis-report.pdf)
+- Link to the Data Quality Report: [data-report.pdf](https://github.com/fi51wate/made/blob/main/project/data-report.pdf)
